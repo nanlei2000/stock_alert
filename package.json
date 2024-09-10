@@ -1,0 +1,23 @@
+{
+  "name": "stock_alert",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nanlei2000/stock_alert.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nanlei2000/stock_alert/issues"
+  },
+  "homepage": "https://github.com/nanlei2000/stock_alert#readme",
+  "dependencies": {
+    "technicalindicators": "^3.1.0",
+    "yahoo-finance2": "^2.11.3"
+  }
+}
