@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/nanlei2000/stock_alert#readme",
   "dependencies": {
+    "node-cron": "^3.0.3",
+    "nodemailer": "^6.9.15",
     "technicalindicators": "^3.1.0",
     "yahoo-finance2": "^2.11.3"
   }
