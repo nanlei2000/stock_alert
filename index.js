@@ -4,6 +4,7 @@ const { RSI } = require('technicalindicators')
 const nodemailer = require('nodemailer')
 const cron = require('node-cron')
 const fs = require('fs')
+const { getFearGreedIndex } = require('./fear_greed')
 
 // 读取配置文件
 const config = JSON.parse(fs.readFileSync('config.json', 'utf-8'))
@@ -96,6 +97,20 @@ async function getMultipleStocksRSI() {
         `Failed to retrieve data for ${stockRSI.stock}: ${stockRSI.error}`
       )
     }
+  }
+
+  // 获取 CNN Fear & Greed Index
+  const fearGreedIndex = await getFearGreedIndex()
+
+  // 如果指数为 "Fear" 或 "Extreme Fear"，添加到报告中
+  if (
+    fearGreedIndex &&
+    (fearGreedIndex.rating.toLowerCase() === 'fear' ||
+      fearGreedIndex.rating.toLowerCase() === 'extreme fear')
+  ) {
+    stockRSIReports.push(
+      `CNN Fear & Greed Index is in ${fearGreedIndex.rating} state (Score: ${fearGreedIndex.score}).`
+    )
   }
 
   // 发送邮件，如果检测结果存在
