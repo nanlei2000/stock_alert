@@ -4,6 +4,7 @@ const { RSI } = require('technicalindicators')
 const nodemailer = require('nodemailer')
 const cron = require('node-cron')
 const fs = require('fs')
+const dayjs = require('dayjs')
 const { getFearGreedIndex } = require('./fear_greed')
 
 // 读取配置文件
@@ -20,12 +21,24 @@ const transporter = nodemailer.createTransport({
   }
 })
 
+// 获取最近 30 天的开始和结束日期
+function getLast30DaysPeriod() {
+  // 获取今天的日期
+  const end = dayjs().format('YYYY-MM-DD')
+
+  // 获取 30 天前的日期
+  const start = dayjs().subtract(30, 'day').format('YYYY-MM-DD')
+
+  return { start, end }
+}
+
 async function getStockRSI(stock) {
   try {
+    const { start, end } = getLast30DaysPeriod()
     // 使用 chart API 获取 AAPL 的数据，时间间隔为 1 天
     const result = await yahooFinance.chart(stock, {
-      period1: '2024-01-01',
-      period2: '2024-09-10',
+      period1: start,
+      period2: end,
       interval: '1d'
     })
 
@@ -38,6 +51,7 @@ async function getStockRSI(stock) {
     }
 
     // 计算 14 天的 RSI
+    // @ts-expect-error
     const rsiValues = RSI.calculate({ values: closingPrices, period: 14 })
 
     // 获取最新的 RSI 值
@@ -85,9 +99,13 @@ async function getMultipleStocksRSI() {
 
     if (stockRSI.rsi !== null) {
       // 检查 RSI 是否小于 30
-      if (stockRSI.rsi < 30) {
+      if (stockRSI.rsi < 32) {
         stockRSIReports.push(
           `RSI for ${stockRSI.stock} is below 30. Current RSI: ${stockRSI.rsi}. Consider buying.`
+        )
+      } else if (stockRSI.rsi > 68) {
+        stockRSIReports.push(
+          `RSI for ${stockRSI.stock} is above 70. Current RSI: ${stockRSI.rsi}. Consider selling.`
         )
       } else {
         stockRSIReports.push(`RSI for ${stockRSI.stock} is ${stockRSI.rsi}.`)
