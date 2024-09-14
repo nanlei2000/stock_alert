@@ -6,6 +6,14 @@ const cron = require('node-cron')
 const fs = require('fs')
 const dayjs = require('dayjs')
 const { getFearGreedIndex } = require('./fear_greed')
+const HttpsProxyAgent = require('https-proxy-agent').HttpsProxyAgent
+
+// 设置代理地址，例如：'http://username:password@proxyserver.com:8080'
+// clash
+const proxy = 'http://127.0.0.1:7890'
+
+// 创建一个代理实例
+const agent = new HttpsProxyAgent(proxy)
 
 // 读取配置文件
 const config = JSON.parse(fs.readFileSync('config.json', 'utf-8'))
@@ -17,8 +25,8 @@ const transporter = nodemailer.createTransport({
   secure: config.smtp.secure,
   auth: {
     user: config.smtp.auth.user,
-    pass: config.smtp.auth.pass
-  }
+    pass: config.smtp.auth.pass,
+  },
 })
 
 // 获取最近 30 天的开始和结束日期
@@ -36,11 +44,19 @@ async function getStockRSI(stock) {
   try {
     const { start, end } = getLast30DaysPeriod()
     // 使用 chart API 获取 AAPL 的数据，时间间隔为 1 天
-    const result = await yahooFinance.chart(stock, {
-      period1: start,
-      period2: end,
-      interval: '1d'
-    })
+    const result = await yahooFinance.chart(
+      stock,
+      {
+        period1: start,
+        period2: end,
+        interval: '1d',
+      },
+      {
+        fetchOptions: {
+          agent,
+        },
+      }
+    )
 
     // 提取收盘价
     const closingPrices = result.quotes.map((v) => v.close)
@@ -60,14 +76,14 @@ async function getStockRSI(stock) {
 
     return {
       stock: stock,
-      rsi: currentRSI
+      rsi: currentRSI,
     }
   } catch (error) {
     console.error(`Error fetching stock data for ${stock}:`, error)
     return {
       stock: stock,
       rsi: null,
-      error: error.message
+      error: error.message,
     }
   }
 }
@@ -78,7 +94,7 @@ async function sendEmail(stockRSIReports) {
     from: config.email.from,
     to: config.email.to,
     subject: 'Stock Alert: RSI Notification',
-    text: stockRSIReports.join('\n') // 汇总每个股票的 RSI 信息
+    text: stockRSIReports.join('\n'), // 汇总每个股票的 RSI 信息
   }
 
   try {
@@ -149,6 +165,9 @@ cron.schedule(
     getMultipleStocksRSI()
   },
   {
-    timezone: 'America/New_York' // 设置时区为美东时间（美国股市常用时区）
+    timezone: 'America/New_York', // 设置时区为美东时间（美国股市常用时区）
   }
 )
+
+// Export for test.
+module.exports = { getMultipleStocksRSI, getStockRSI }
