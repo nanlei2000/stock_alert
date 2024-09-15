@@ -1,4 +1,4 @@
 // @ts-check
-const { getStockRSI } = require('../index')
+const { getMultipleStocksRSI } = require('../index')
 
-getStockRSI('SPY')
+getMultipleStocksRSI()

@@ -1,3 +1,5 @@
 const { getFearGreedIndex } = require('../fear_greed')
 
-getFearGreedIndex()
+const result = getFearGreedIndex()
+
+console.log('result', result)
