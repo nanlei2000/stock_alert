@@ -48,11 +48,11 @@ async function getMultipleStocksRSI() {
       // 检查 RSI 是否小于 30
       if (stockRSI.rsi < 32) {
         stockRSIReports.push(
-          `RSI for ${stockRSI.stock} is below 30. Current RSI: ${stockRSI.rsi}. Consider buying.`
+          `RSI for ${stockRSI.stock} is below 32. Current RSI: ${stockRSI.rsi}. Consider buying.`
         )
       } else if (stockRSI.rsi > 68) {
         stockRSIReports.push(
-          `RSI for ${stockRSI.stock} is above 70. Current RSI: ${stockRSI.rsi}. Consider selling.`
+          `RSI for ${stockRSI.stock} is above 68. Current RSI: ${stockRSI.rsi}. Consider selling.`
         )
       } else {
         stockRSIReports.push(`RSI for ${stockRSI.stock} is ${stockRSI.rsi}.`)
