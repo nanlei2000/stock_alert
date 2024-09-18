@@ -47,20 +47,14 @@ async function getMultipleStocksRSI() {
     if (stockRSI.rsi !== null) {
       // 检查 RSI 是否小于 30
       if (stockRSI.rsi < 32) {
-        stockRSIReports.push(
-          `RSI for ${stockRSI.stock} is below 32. Current RSI: ${stockRSI.rsi}. Consider buying.`
-        )
+        stockRSIReports.push(`RSI for ${stockRSI.stock} is below 32. Current RSI: ${stockRSI.rsi}. Consider buying.`)
       } else if (stockRSI.rsi > 68) {
-        stockRSIReports.push(
-          `RSI for ${stockRSI.stock} is above 68. Current RSI: ${stockRSI.rsi}. Consider selling.`
-        )
+        stockRSIReports.push(`RSI for ${stockRSI.stock} is above 68. Current RSI: ${stockRSI.rsi}. Consider selling.`)
       } else {
         stockRSIReports.push(`RSI for ${stockRSI.stock} is ${stockRSI.rsi}.`)
       }
     } else {
-      stockRSIReports.push(
-        `Failed to retrieve data for ${stockRSI.stock}: ${stockRSI.error}`
-      )
+      stockRSIReports.push(`Failed to retrieve data for ${stockRSI.stock}: ${stockRSI.error}`)
     }
   }
 
@@ -89,7 +83,7 @@ async function getMultipleStocksRSI() {
 // 使用 cron 每天工作日（周一至周五）定时运行
 // cron 格式: '秒 分钟 小时 日 月 星期几'
 cron.schedule(
-  '0 20 * * 1-5',
+  '0 22 * * 1-5',
   () => {
     // 每天下午 16:00 运行
     console.log('Running stock check...')
