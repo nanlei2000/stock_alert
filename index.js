@@ -3,7 +3,7 @@ const nodemailer = require('nodemailer')
 const cron = require('node-cron')
 const fs = require('fs')
 const { getFearGreedIndex } = require('./lib/fear_greed')
-const { getStockRSIAndMFI } = require('./lib/rsi')
+const { getStockRSI } = require('./lib/rsi')
 
 // 读取配置文件
 const config = JSON.parse(fs.readFileSync('config.json', 'utf-8'))
@@ -42,20 +42,16 @@ async function getMultipleStocksRSI() {
 
   // 遍历配置文件中列出的每个股票
   for (const stock of config.stocks) {
-    const stockRSI = await getStockRSIAndMFI(stock)
+    const stockRSI = await getStockRSI(stock)
 
     if (stockRSI.rsi !== null) {
       // 检查 RSI 是否小于 30
       if (stockRSI.rsi < 32) {
-        stockRSIReports.push(
-          `RSI for ${stockRSI.stock} is below 32. Current RSI: ${stockRSI.rsi}. MFI: ${stockRSI.mfi}. Consider buying.`
-        )
+        stockRSIReports.push(`RSI for ${stockRSI.stock} is below 32. Current RSI: ${stockRSI.rsi}. Consider buying.`)
       } else if (stockRSI.rsi > 68) {
-        stockRSIReports.push(
-          `RSI for ${stockRSI.stock} is above 68. Current RSI: ${stockRSI.rsi}. MFI: ${stockRSI.mfi}. Consider selling.`
-        )
+        stockRSIReports.push(`RSI for ${stockRSI.stock} is above 68. Current RSI: ${stockRSI.rsi}. Consider selling.`)
       } else {
-        stockRSIReports.push(`RSI for ${stockRSI.stock} is ${stockRSI.rsi}. MFI: ${stockRSI.mfi}.`)
+        stockRSIReports.push(`RSI for ${stockRSI.stock} is ${stockRSI.rsi}.`)
       }
     } else {
       stockRSIReports.push(`Failed to retrieve data for ${stockRSI.stock}: ${stockRSI.error}`)
@@ -99,4 +95,4 @@ cron.schedule(
 )
 
 // Export for test.
-module.exports = { getMultipleStocksRSI }
+module.exports = { getMultipleStocksRSI, getStockRSI }
