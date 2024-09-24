@@ -1,7 +1,4 @@
 // @ts-check
-const { getMultipleStocksRSI } = require('../index')
-const { getLast30DaysPeriod } = require('../lib/rsi')
+const { getStockRSI } = require('../lib/rsi')
 
-// getMultipleStocksRSI()
-
-console.log(getLast30DaysPeriod())
+getStockRSI('NVDA').then((res) => console.log(res))
