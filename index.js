@@ -5,6 +5,7 @@ const fs = require('fs')
 const { getFearGreedIndex } = require('./lib/fear_greed')
 const { getStockRSI } = require('./lib/rsi')
 const { getVIXInfo } = require('./lib/vix')
+const { fixDigit } = require('./lib/util')
 
 // 读取配置文件
 const config = JSON.parse(fs.readFileSync('config.json', 'utf-8'))
@@ -48,11 +49,15 @@ async function getMultipleStocksRSI() {
     if (stockRSI.rsi !== null) {
       // 检查 RSI 是否小于 30
       if (stockRSI.rsi < 32) {
-        stockRSIReports.push(`RSI for ${stockRSI.stock} is below 32. Current RSI: ${stockRSI.rsi}. Consider buying.`)
+        stockRSIReports.push(
+          `RSI for ${stockRSI.stock} is below 32. Current RSI: ${fixDigit(stockRSI.rsi)}. Consider buying.`
+        )
       } else if (stockRSI.rsi > 68) {
-        stockRSIReports.push(`RSI for ${stockRSI.stock} is above 68. Current RSI: ${stockRSI.rsi}. Consider selling.`)
+        stockRSIReports.push(
+          `RSI for ${stockRSI.stock} is above 68. Current RSI: ${fixDigit(stockRSI.rsi)}. Consider selling.`
+        )
       } else {
-        stockRSIReports.push(`RSI for ${stockRSI.stock} is ${stockRSI.rsi}.`)
+        stockRSIReports.push(`RSI for ${stockRSI.stock} is ${fixDigit(stockRSI.rsi)}.`)
       }
     } else {
       stockRSIReports.push(`Failed to retrieve data for ${stockRSI.stock}: ${stockRSI.error}`)
@@ -62,7 +67,7 @@ async function getMultipleStocksRSI() {
   // 获取 VIX 指数
   const vixInfo = await getVIXInfo()
   if (vixInfo) {
-    stockRSIReports.push(`VIX index is ${vixInfo.price} (MA20: ${vixInfo.ma20}).`)
+    stockRSIReports.push(`VIX index is ${fixDigit(vixInfo.price)} (MA20: ${fixDigit(vixInfo.ma20)}).`)
   }
 
   // 获取 CNN Fear & Greed Index
@@ -75,7 +80,7 @@ async function getMultipleStocksRSI() {
     //   fearGreedIndex.rating.toLowerCase() === 'extreme fear')
   ) {
     stockRSIReports.push(
-      `CNN Fear & Greed Index is in ${fearGreedIndex.rating} state (Score: ${fearGreedIndex.score}).`
+      `CNN Fear & Greed Index is in ${fearGreedIndex.rating} state (Score: ${fixDigit(fearGreedIndex.score)}).`
     )
   }
 
