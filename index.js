@@ -4,6 +4,7 @@ const cron = require('node-cron')
 const fs = require('fs')
 const { getFearGreedIndex } = require('./lib/fear_greed')
 const { getStockRSI } = require('./lib/rsi')
+const { getVIXInfo } = require('./lib/vix')
 
 // 读取配置文件
 const config = JSON.parse(fs.readFileSync('config.json', 'utf-8'))
@@ -56,6 +57,12 @@ async function getMultipleStocksRSI() {
     } else {
       stockRSIReports.push(`Failed to retrieve data for ${stockRSI.stock}: ${stockRSI.error}`)
     }
+  }
+
+  // 获取 VIX 指数
+  const vixInfo = await getVIXInfo()
+  if (vixInfo) {
+    stockRSIReports.push(`VIX index is ${vixInfo.price} (MA20: ${vixInfo.ma20}).`)
   }
 
   // 获取 CNN Fear & Greed Index
