@@ -95,7 +95,7 @@ async function getMultipleStocksRSI() {
 // 使用 cron 每天工作日（周一至周五）定时运行
 // cron 格式: '秒 分钟 小时 日 月 星期几'
 cron.schedule(
-  '0 10 * * 1-5',
+  '0 20 * * 1-5',
   () => {
     console.log('Running stock check...')
     getMultipleStocksRSI()
